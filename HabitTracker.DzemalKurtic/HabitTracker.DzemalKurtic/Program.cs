@@ -127,8 +127,12 @@ namespace HabitTracker.DzemalKurtic
             {
                 connection.Open();
                 var tableCmd = connection.CreateCommand();
+
                 tableCmd.CommandText =
-                   $"INSERT INTO drinking_water(date, quantity) VALUES('{date}', {quantity})";
+                   "INSERT INTO drinking_water(date, quantity) VALUES(@date, @quantity)";
+
+                tableCmd.Parameters.AddWithValue("@date", date);
+                tableCmd.Parameters.AddWithValue("@quantity", quantity);
 
                 tableCmd.ExecuteNonQuery();
 
@@ -148,7 +152,9 @@ namespace HabitTracker.DzemalKurtic
                 connection.Open();
                 var tableCmd = connection.CreateCommand();
 
-                tableCmd.CommandText = $"DELETE from drinking_water WHERE Id = '{recordId}'";
+                tableCmd.CommandText = "DELETE from drinking_water WHERE Id = @recordId";
+
+                tableCmd.Parameters.AddWithValue("@recordId", recordId);
 
                 int rowCount = tableCmd.ExecuteNonQuery();
 
@@ -176,7 +182,10 @@ namespace HabitTracker.DzemalKurtic
                 connection.Open();
 
                 var checkCmd = connection.CreateCommand();
-                checkCmd.CommandText = $"SELECT EXISTS(SELECT 1 FROM drinking_water WHERE Id = {recordId})";
+                checkCmd.CommandText = "SELECT EXISTS(SELECT 1 FROM drinking_water WHERE Id = @recordId)";
+
+                checkCmd.Parameters.AddWithValue("@recordId", recordId);
+
                 int checkQuery = Convert.ToInt32(checkCmd.ExecuteScalar());
 
                 if (checkQuery == 0)
@@ -191,14 +200,16 @@ namespace HabitTracker.DzemalKurtic
                 int quantity = GetNumberInput("\n\nPlease insert number of glasses or other measure of your choice (no decimals allowed)\n\n");
 
                 var tableCmd = connection.CreateCommand();
-                tableCmd.CommandText = $"UPDATE drinking_water SET date = '{date}', quantity = {quantity} WHERE Id = {recordId}";
+                tableCmd.CommandText = "UPDATE drinking_water SET date = @date, quantity = @quantity WHERE Id = @recordId";
+
+                tableCmd.Parameters.AddWithValue("@date", date);
+                tableCmd.Parameters.AddWithValue("@quantity", quantity);
+                tableCmd.Parameters.AddWithValue("@recordId", recordId);
 
                 tableCmd.ExecuteNonQuery();
 
                 connection.Close();
             }
-
-
         }
 
         internal static string GetDateInput()
